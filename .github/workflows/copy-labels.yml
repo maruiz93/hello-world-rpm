@@ -11,14 +11,10 @@ jobs:
       issues: read
       pull-requests: write
     runs-on: ubuntu-latest
-    name: Copy labels from linked issues
+    name: Copy labels from referenced issue
     steps:
       - name: Copy labels
+        id: copy-labels
         uses: michalvankodev/copy-issue-labels@v1.3.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-  assign-reviewers:
-    needs: ["copy-labels"]
-    permissions:
-      pull-requests: write
-    uses: ./.github/workflows/assign-reviewers.yml

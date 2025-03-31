@@ -1,4 +1,4 @@
-name: "Pull Request Reviewers by Label"
+name: "Pull request reviewers by label"
 on:
   workflow_call:
   pull_request_target:
@@ -17,4 +17,4 @@ jobs:
         id: assign-reviewers
         uses: totallymoney/assign-reviewers-by-labels-action@v1
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: "${{ secrets.PR_LABELS_TOKEN }}"
