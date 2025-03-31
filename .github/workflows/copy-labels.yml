@@ -1,0 +1,19 @@
+name: "Copy labels from referenced issue"
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+
+jobs:
+  copy-labels:
+    permissions:
+      issues: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    name: Copy labels from linked issues
+    steps:
+      - name: Copy labels
+        uses: michalvankodev/copy-issue-labels@v1.3.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
