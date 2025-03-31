@@ -1,4 +1,4 @@
-name: "Pull Request Label Reviewers"
+name: "Pull Request Reviewers by Label"
 on:
   workflow_call:
   pull_request_target:
@@ -13,7 +13,7 @@ jobs:
     name: assign and unassign reviewers
     runs-on: ubuntu-latest
     steps:
-      - name: main
+      - name: Assign reviewers
         id: assign-reviewers
         uses: totallymoney/assign-reviewers-by-labels-action@v1
         with:

@@ -18,6 +18,7 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
   assign-reviewers:
+    needs: ["copy-labels"]
     permissions:
       pull-requests: write
     uses: ./.github/workflows/assign-reviewers.yml
