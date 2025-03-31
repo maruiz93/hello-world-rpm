@@ -18,4 +18,4 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
   assign-reviewers:
-    uses: ./workflows/assign-reviewers.yml
+    uses: ./.github/workflows/assign-reviewers.yml
