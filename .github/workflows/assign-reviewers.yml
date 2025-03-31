@@ -1,6 +1,5 @@
 name: "Pull request reviewers by label"
 on:
-  workflow_call:
   pull_request_target:
     types:
       - unlabeled
