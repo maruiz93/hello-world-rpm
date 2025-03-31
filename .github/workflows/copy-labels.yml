@@ -17,3 +17,5 @@ jobs:
         uses: michalvankodev/copy-issue-labels@v1.3.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+  assign-reviewers:
+    uses: ./workflows/assign-reviewers.yml
