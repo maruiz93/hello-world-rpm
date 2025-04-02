@@ -6,15 +6,45 @@ on:
       - edited
 
 jobs:
-  copy-labels:
+  #copy-labels:
+  #  permissions:
+  #    issues: read
+  #    pull-requests: write
+  #  runs-on: ubuntu-latest
+  #  name: Copy labels from referenced issue
+  #  steps:
+  #    - name: Copy labels
+  #      id: copy-labels
+  #      uses: michalvankodev/copy-issue-labels@v1.3.0
+  #      with:
+  #        repo-token: ${{ secrets.PR_LABELS_TOKEN }}
+  add-assignee:
     permissions:
-      issues: read
       pull-requests: write
     runs-on: ubuntu-latest
-    name: Copy labels from referenced issue
+    name: Add assignee to the PR
     steps:
-      - name: Copy labels
-        id: copy-labels
-        uses: michalvankodev/copy-issue-labels@v1.3.0
-        with:
-          repo-token: ${{ secrets.PR_LABELS_TOKEN }}
+      - name: Add assignee to the PR
+        id: add-assignee
+        if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
+        run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee ${{ github.event.pull_request.user.login }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  check-issue-linked:
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-latest
+    name: Check issue linked to PR
+    steps:
+      - name: Check issue linked to PR
+        id: check-issue
+        run: |
+          LINKED_ISSUES=$(gh api repos/$REPO/pulls/$PR_NUMBER/issues | jq length)
+          if [[ "${LINKED_ISSUES}" -eq 0 ]]; then
+            echo "No linked issues found. Please link an issue to this PR."
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
