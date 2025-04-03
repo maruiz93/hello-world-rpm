@@ -39,6 +39,7 @@ jobs:
       - name: Get linked issues
         id: get-linked-issues
         run: |
+          REPO=$(basename ${{ github.repository }})
           QUERY='{
                     repository(owner:"${OWNER}", name:"${REPO}") {
                       pullRequest(number: ${PR_ID}) {
@@ -52,7 +53,6 @@ jobs:
           echo "issue_count=$ISSUE_COUNT" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository.name }}
           OWNER: ${{ github.repository_owner }}
           PR_ID: ${{ github.event.pull_request.number }}
       - name: Fail if no issue
