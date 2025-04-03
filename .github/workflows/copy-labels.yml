@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Add assignee to the PR
     steps:
+      - name: check
+        run: echo '${{ toJson(github.event) }}' | jq .
       - name: Add assignee to the PR
         id: add-assignee
         if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
