@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Add assignee to the PR
     steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
       - name: Add assignee to the PR
         id: add-assignee
         if: ${{ github.event.pull_request.assignee == null }}
