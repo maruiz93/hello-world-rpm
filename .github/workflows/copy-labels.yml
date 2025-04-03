@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: Add assignee to the PR
         id: add-assignee
-        if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-assignee ${{ github.event.pull_request.user.login }}
+        # if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
+        run: echo ${{ github.event }} | jq
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   check-issue-linked:
@@ -36,15 +36,26 @@ jobs:
     runs-on: ubuntu-latest
     name: Check issue linked to PR
     steps:
-      - name: Check issue linked to PR
-        id: check-issue
+      - name: Get linked issues
+        id: get-linked-issues
         run: |
-          LINKED_ISSUES=$(gh api repos/$REPO/pulls/$PR_NUMBER/issues | jq length)
-          if [[ "${LINKED_ISSUES}" -eq 0 ]]; then
-            echo "No linked issues found. Please link an issue to this PR."
-            exit 1
-          fi
+          QUERY='{
+                    repository(owner:"${OWNER}", name:"${REPO}") {
+                      pullRequest(number: ${PR_ID}) {
+                        closingIssuesReferences(first: 10) {
+                          totalCount
+                        }
+                      }
+                    }
+                  }'
+          ISSUE_COUNT=$(gh api graphql -f query="$QUERY" --jq '.data.repository.pullRequest.closingIssuesReferences.totalCount')
+          echo "issue_count=$ISSUE_COUNT" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
+          REPO: ${{ github.repository.name }}
+          OWNER: ${{ github.repository_owner }}
+          PR_ID: ${{ github.event.pull_request.number }}
+      - name: Fail if no issue
+        id: fail-if-no-issue
+        if: env.issue_count == '0'
+        run: echo "No linked issues found. Please link an issue to this PR" && exit 1
