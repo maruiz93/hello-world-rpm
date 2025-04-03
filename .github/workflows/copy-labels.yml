@@ -40,15 +40,18 @@ jobs:
         id: get-linked-issues
         run: |
           REPO=$(echo ${{ github.repository }} | cut -d'/' -f2)
-          QUERY='{
-                    repository(owner:"${OWNER}", name:"${REPO}") {
-                      pullRequest(number: ${PR_ID}) {
-                        closingIssuesReferences(first: 10) {
-                          totalCount
-                        }
-                      }
-                    }
-                  }'
+          QUERY=$(cat <<EOF 
+          {
+            repository(owner:"${OWNER}", name:"${REPO}") {
+              pullRequest(number: ${PR_ID}) {
+                closingIssuesReferences(first: 10) {
+                  totalCount
+                }
+              }
+            }
+          }
+          EOF
+          )
           ISSUE_COUNT=$(gh api graphql -f query="$QUERY" --jq '.data.repository.pullRequest.closingIssuesReferences.totalCount')
           echo "issue_count=$ISSUE_COUNT" >> $GITHUB_ENV
         env:
