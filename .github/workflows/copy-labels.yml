@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: Add assignee to the PR
         id: add-assignee
-        # if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
-        run: echo '${{ toJson(github.event) }}' | jq
+        if: ${{ github.event.pull_request.assignees == null || github.event.pull_request.assignees == '' }}
+        run: gh pr edit --add-assignee ${{ github.event.pull_request.user.login }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   check-issue-linked:
